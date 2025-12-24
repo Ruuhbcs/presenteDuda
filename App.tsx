@@ -115,9 +115,8 @@ const App: React.FC = () => {
         isOpen={showPasswordModal} 
         onClose={() => setShowPasswordModal(false)}
         onUnlock={() => {
-          setIsUnlocked(true);
+          setIsRevealed(true);
           setShowPasswordModal(false);
-          window.open(APP_DEFAULTS.GIFT_URL, '_blank', 'noopener,noreferrer');
         }}
       />
       {/* --- HERO / MESSAGE SECTION --- */}
@@ -213,8 +212,8 @@ const App: React.FC = () => {
 
           {/* Interactive QR Code Container */}
           <div 
-            onClick={() => setIsRevealed(true)}
-            className={`relative p-8 bg-parchment rounded-3xl shadow-2xl border-2 border-gold/40 transition-all duration-700 cursor-pointer ${!isRevealed ? 'hover:scale-105' : ''}`}
+            onClick={() => !isRevealed && setShowPasswordModal(true)}
+            className={`relative p-8 bg-parchment rounded-3xl shadow-2xl border-2 border-gold/40 transition-all duration-700 ${!isRevealed ? 'cursor-pointer hover:scale-105' : ''}`}
           >
             {/* Reveal Overlay */}
             {!isRevealed && (
@@ -229,11 +228,18 @@ const App: React.FC = () => {
             </div>
             
             <div className={`w-56 h-56 bg-white p-3 rounded-lg overflow-hidden flex items-center justify-center border border-emerald-900/10 transition-all duration-1000 ${!isRevealed ? 'blur-md grayscale' : 'blur-0 grayscale-0'}`}>
-               <img 
-                 src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(APP_DEFAULTS.GIFT_URL)}&color=064e3b`} 
-                 alt="QR Code do Presente"
-                 className="w-full h-full object-contain"
-               />
+               <a
+                 href={APP_DEFAULTS.GIFT_URL}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className={`w-full h-full flex items-center justify-center ${!isRevealed ? 'pointer-events-none' : ''}`}
+               >
+                 <img 
+                   src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(APP_DEFAULTS.GIFT_URL)}&color=064e3b`} 
+                   alt="QR Code do Presente"
+                   className="w-full h-full object-contain"
+                 />
+               </a>
             </div>
             
             <div className="mt-4 text-center">
@@ -248,13 +254,15 @@ const App: React.FC = () => {
 
           {/* Action Link */}
           <div className={`relative transition-all duration-1000 delay-300 ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <button
-              onClick={() => setShowPasswordModal(true)}
+            <a
+              href={APP_DEFAULTS.GIFT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="gold-button flex items-center gap-3 px-12 py-5 rounded-full text-emerald-950 font-bold text-lg transition-all active:scale-95 hover:brightness-110 shadow-[0_10px_30px_rgba(191,149,63,0.4)]"
             >
               RESGATAR NO SITE
               <ExternalLink size={20} />
-            </button>
+            </a>
           </div>
 
           <div className="pt-12 flex flex-col items-center opacity-40">

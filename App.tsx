@@ -27,9 +27,73 @@ const GoldDust: React.FC = () => {
   );
 };
 
+const PasswordModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onUnlock: () => void;
+}> = ({ isOpen, onClose, onUnlock }) => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = () => {
+    if (password === '1236') {
+      onUnlock();
+      setPassword('');
+      setError('');
+    } else {
+      setError('Senha incorreta! Tente novamente.');
+      setPassword('');
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-parchment rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-gold/40 animate-scale-up">
+        <h3 className="font-display text-2xl text-emerald-900 text-center mb-2">🔐 Digite a Senha</h3>
+        <p className="text-emerald-800/60 text-center text-sm mb-6">Este presente está protegido!</p>
+        
+        <div className="space-y-4">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+            placeholder="Digite a senha"
+            className="w-full px-4 py-3 rounded-lg border border-emerald-900/20 bg-white text-emerald-900 placeholder-emerald-800/40 focus:outline-none focus:border-gold/40 focus:ring-2 focus:ring-gold/20"
+            autoFocus
+          />
+          
+          {error && (
+            <p className="text-red-600 text-sm text-center font-semibold">{error}</p>
+          )}
+          
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 rounded-lg border border-emerald-900/20 text-emerald-900 font-semibold hover:bg-emerald-900/5 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="flex-1 px-4 py-2 rounded-lg bg-gold text-emerald-950 font-semibold hover:brightness-110 transition-all active:scale-95"
+            >
+              Desbloquear
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const giftSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,6 +111,15 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-emerald-950 text-emerald-50 overflow-x-hidden selection:bg-gold/30">
       
+      <PasswordModal 
+        isOpen={showPasswordModal} 
+        onClose={() => setShowPasswordModal(false)}
+        onUnlock={() => {
+          setIsUnlocked(true);
+          setShowPasswordModal(false);
+          window.open(APP_DEFAULTS.GIFT_URL, '_blank', 'noopener,noreferrer');
+        }}
+      />
       {/* --- HERO / MESSAGE SECTION --- */}
       <section className="relative w-full min-h-screen flex flex-col items-center justify-center p-6 overflow-hidden bg-emerald-950">
         <GoldDust />
@@ -175,15 +248,13 @@ const App: React.FC = () => {
 
           {/* Action Link */}
           <div className={`relative transition-all duration-1000 delay-300 ${isRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <a 
-              href={APP_DEFAULTS.GIFT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setShowPasswordModal(true)}
               className="gold-button flex items-center gap-3 px-12 py-5 rounded-full text-emerald-950 font-bold text-lg transition-all active:scale-95 hover:brightness-110 shadow-[0_10px_30px_rgba(191,149,63,0.4)]"
             >
               RESGATAR NO SITE
               <ExternalLink size={20} />
-            </a>
+            </button>
           </div>
 
           <div className="pt-12 flex flex-col items-center opacity-40">
